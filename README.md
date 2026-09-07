@@ -81,3 +81,19 @@ CHRONICLE_HOME=data/demo bun run chronicle serve
 ```
 
 The demo is synthetic, separate from real history, and ignored by Git. See `artifacts/verification.md` for actual results and remaining access blockers. The implementation has been executed on macOS; Windows/WSL/Linux path support is implemented but has not been run on those operating systems.
+
+## Curate activity into useful notes
+
+The web UI defaults to automatic noise reduction: sign-in/redirect paths, browser/internal URLs, loopback development pages, and repeated visits to the same URL/kind on the same local day are hidden. These are transparent rules, not AI relevance judgments. Select **Show all** to reveal every clustered entry with its noise reason; raw events are never deleted. Saved items bypass noise filtering. Mute a domain to remove it from the automatic view, and unmute it from the sidebar at any time.
+
+Filter by date range, activity type, source, device, or domain (including subdomains). Web search matches text in titles, URLs, saved titles, notes, and next steps; CLI search continues to use FTS query syntax.
+
+Choose **Save / add note** on an entry, capture why it matters and a next step, and set its status to Saved, Explore further, or Done. Notes attach to the canonical URL so later visits retain them. The Saved logs & notes and Explore further collections show one item per URL. Notes and muted domains persist in the local database but are not included in event-shard sync.
+
+**Export filtered log (.md)** downloads the complete current filtered collection, including source links, timestamps, notes, and next steps. Exports may contain personal information; keep them in a private location. The app does not fetch page contents or generate inferred summaries. Dates refer to activity timestamps, not note-edit dates.
+
+## Smart tags
+
+Topic tags are suggested locally from activity titles, URL paths, and note text. Rules cover programming, AI, design, research, learning, productivity, tools, and reading; video and search tags also use the activity type or known video hosts. These are keyword suggestions, not AI-generated summaries or page-content analysis. Query-string values are not used for topic matching.
+
+Click a tag to filter the timeline, or type one tag in the Tag filter. Tags are also searchable and included in Markdown exports. In the note editor, **Your tags** accepts comma-separated custom tags; **Hide automatic tags** suppresses incorrect suggestions. Custom tags and exclusions are saved per canonical URL on this device, alongside notes, and are not exported through event-shard sync. Up to 30 tags per list, 40 characters each, are accepted; case and duplicate tags are normalized.
