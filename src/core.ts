@@ -30,6 +30,7 @@ export const sources = [
 	"firefox",
 	"google_activity",
 	"youtube",
+	"manual",
 ];
 export const hash = (s: string) => createHash("sha256").update(s).digest("hex");
 export function canonical(url: string | null) {
@@ -53,11 +54,14 @@ export function event(
 	input: Omit<Event, "id" | "canonical_url" | "domain">,
 ): Event {
 	const c =
+		(input.source === "manual"
+			? `manual:${JSON.parse(input.meta).manual_id}`
+			: "") ||
 		canonical(input.url) ||
 		`unavailable:${hash(input.title || "Deleted video")}`;
 	let domain = null;
 	try {
-		domain = new URL(c).hostname;
+		domain = new URL(input.url || c).hostname;
 	} catch {}
 	return {
 		...input,
@@ -111,7 +115,7 @@ export function put(
 		!Number.isFinite(e.ts) ||
 		e.ts < 0 ||
 		!sources.includes(e.source) ||
-		!["page_view", "search", "video_watch"].includes(e.kind) ||
+		!["page_view", "search", "video_watch", "manual_event"].includes(e.kind) ||
 		event(e).id !== e.id
 	)
 		throw Error("Invalid event");

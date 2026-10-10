@@ -1,0 +1,11 @@
+{
+	"manifest_version": 3,
+	"name": "Chronicle Capture",
+	"version": "0.1.0",
+	"description": "Record browsing locally and capture pages for optional Codex digests.",
+	"permissions": ["storage", "history", "alarms", "activeTab", "scripting"],
+	"host_permissions": ["http://127.0.0.1:4400/*"],
+	"background": { "service_worker": "background.js" },
+	"action": { "default_popup": "popup.html" },
+	"incognito": "not_allowed"
+}

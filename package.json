@@ -1,1 +1,1 @@
-{"name":"chronicle","private":true,"type":"module","scripts":{"chronicle":"bun src/cli.ts","typecheck":"tsc --noEmit","lint":"biome check src tests","test":"bun test"},"devDependencies":{"@types/bun":"latest","@biomejs/biome":"latest","typescript":"latest"}}
+{"name":"chronicle","private":true,"type":"module","scripts":{"chronicle":"bun src/cli.ts","typecheck":"tsc --noEmit","lint":"biome check src tests extension","test":"bun test"},"devDependencies":{"@types/bun":"latest","@biomejs/biome":"latest","typescript":"latest"}}

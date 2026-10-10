@@ -1,6 +1,6 @@
 # Chronicle
 
-Local-first browsing and YouTube activity timeline. TypeScript, Bun, SQLite, FTS5, and plain HTML/JS. No runtime outbound requests, remote assets, telemetry, or account service.
+Local-first browsing and YouTube activity timeline. TypeScript, Bun, SQLite, FTS5, and plain HTML/JS. No automatic outbound requests, remote assets, telemetry, or account service. Optional, explicitly requested agent digests use the local Codex CLI and send reviewed page text to its model provider.
 
 ## Run
 
@@ -97,3 +97,13 @@ Choose **Save / add note** on an entry, capture why it matters and a next step, 
 Topic tags are suggested locally from activity titles, URL paths, and note text. Rules cover programming, AI, design, research, learning, productivity, tools, and reading; video and search tags also use the activity type or known video hosts. These are keyword suggestions, not AI-generated summaries or page-content analysis. Query-string values are not used for topic matching.
 
 Click a tag to filter the timeline, or type one tag in the Tag filter. Tags are also searchable and included in Markdown exports. In the note editor, **Your tags** accepts comma-separated custom tags; **Hide automatic tags** suppresses incorrect suggestions. Custom tags and exclusions are saved per canonical URL on this device, alongside notes, and are not exported through event-shard sync. Up to 30 tags per list, 40 characters each, are accepted; case and duplicate tags are normalized.
+
+## User-triggered events
+
+Click **Add event** to record an idea, meeting, decision, or other activity without a browser visit. Enter a title and local date/time, with an optional HTTP(S) link, notes, tags, and next step. Saving opens Saved logs & notes and highlights the new event. Filter Source by `manual` or Activity type by User events.
+
+Manual events use a unique identity, so separate entries with the same title or link stay separate. Retrying the same submission does not duplicate it. The event itself participates in shard sync; notes, custom tags, and later edits remain local, like other saved notes. Each device importing these events must run a version that supports the manual source.
+
+## Chrome capture extension
+
+See [extension setup and privacy details](extension/README.md). The extension records new visits while Chrome stays open and supports reviewed page captures with optional Codex digests. Install it as an unpacked extension, pair with the local app, and explicitly enable recording.

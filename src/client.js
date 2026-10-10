@@ -220,7 +220,15 @@ async function load(reset = true) {
 				link.target = "_blank";
 				link.rel = "noopener noreferrer";
 			}
-			body.append(link, node("div", r.domain || "Unavailable link", "detail"));
+			body.append(
+				link,
+				node(
+					"div",
+					r.domain ||
+						(r.source === "manual" ? "Personal event" : "Unavailable link"),
+					"detail",
+				),
+			);
 			for (const source of r.also_seen_in)
 				body.append(node("span", source, "tag"));
 			for (const tag of r.tags) {
@@ -321,3 +329,123 @@ el("export").onclick = () => {
 	window.location.href = `/api/export?${params()}`;
 };
 load();
+
+el("add-event").onclick = () => {
+	const host = el("manual-editor");
+	if (host.children.length) return;
+	const form = node("form", null, "editor");
+	form.append(node("h2", "Add your own event"));
+	function field(label, type = "text") {
+		const l = node("label", label),
+			input = node(type === "textarea" ? "textarea" : "input");
+		input.setAttribute("aria-label", label);
+		if (type !== "textarea") input.type = type;
+		l.append(input);
+		form.append(l);
+		return input;
+	}
+	const title = field("Event title");
+	title.required = true;
+	title.maxLength = 1000;
+	const time = field("Event time", "datetime-local");
+	time.required = true;
+	const now = new Date();
+	time.value = new Date(+now - now.getTimezoneOffset() * 60000)
+		.toISOString()
+		.slice(0, 16);
+	const link = field("Link (optional)", "url");
+	const note = field("Event notes", "textarea");
+	note.maxLength = 50000;
+	const next = field("Event next step", "textarea");
+	next.maxLength = 10000;
+	const tags = field("Event tags (comma separated)");
+	const actions = node("div", null, "actions"),
+		save = node("button", "Save event");
+	save.type = "submit";
+	actions.append(
+		save,
+		button("Cancel", () => host.replaceChildren()),
+	);
+	const message = node("p");
+	message.setAttribute("role", "status");
+	form.append(actions, message);
+	const id = crypto.randomUUID();
+	form.onsubmit = async (e) => {
+		e.preventDefault();
+		save.disabled = true;
+		try {
+			const result = await post("/api/events", {
+				id,
+				title: title.value,
+				ts: new Date(time.value).getTime(),
+				url: link.value,
+				body: note.value,
+				next_step: next.value,
+				tags: tags.value
+					.split(",")
+					.map((t) => t.trim())
+					.filter(Boolean),
+			});
+			host.replaceChildren();
+			for (const key of ["q", ...filters])
+				el(key).value = key === "view" ? "saved" : key === "noise" ? "on" : "";
+			await load();
+			const saved = [...document.querySelectorAll("article")].find(
+				(a) => a.dataset.url === result.canonical_url,
+			);
+			if (saved) {
+				saved.classList.add("just-saved");
+				saved.scrollIntoView({ block: "center" });
+				el("status").textContent = "Event saved to your logs.";
+			}
+		} catch (error) {
+			message.textContent = error.message;
+			save.disabled = false;
+		}
+	};
+	host.append(form);
+	title.focus();
+};
+
+async function loadCaptures() {
+	try {
+		const response = await fetch("/api/captures");
+		const rows = await response.json();
+		el("captures").replaceChildren();
+		for (const r of rows) {
+			const box = node("section");
+			box.append(node("h2", r.title), node("p", r.status));
+			if (r.error) box.append(node("p", r.error));
+			if (r.digest) box.append(node("div", r.digest, "note-preview"));
+			if (["captured", "failed"].includes(r.status))
+				box.append(
+					button("Send capture to Codex for digest", async () => {
+						try {
+							await post("/api/digest-retry", { id: r.id });
+							loadCaptures();
+						} catch (e) {
+							el("status").textContent = e.message;
+						}
+					}),
+				);
+			el("captures").append(box);
+		}
+		if (!rows.length)
+			el("captures").append(
+				node("p", "No captures yet. Use Preview page capture in Chrome."),
+			);
+	} catch (e) {
+		el("status").textContent = e.message;
+	}
+}
+el("pair-extension").onclick = async () => {
+	try {
+		const r = await post("/api/pair-token", {});
+		el("pair-token").type = "text";
+		el("pair-token").value = r.token;
+		el("pair-token").select();
+	} catch (e) {
+		el("status").textContent = e.message;
+	}
+};
+el("refresh-captures").onclick = loadCaptures;

@@ -1,0 +1,46 @@
+body {
+	width: 340px;
+	margin: 18px;
+	background: #f7f6f2;
+	color: #232820;
+	font: 14px system-ui;
+}
+h1 {
+	font:
+		26px Georgia,
+		serif;
+}
+label {
+	display: block;
+	margin: 12px 0;
+}
+input[type="password"],
+textarea {
+	width: 100%;
+	box-sizing: border-box;
+	padding: 8px;
+}
+textarea {
+	height: 180px;
+}
+button {
+	display: block;
+	width: 100%;
+	margin: 9px 0;
+	padding: 10px;
+	border: 1px solid #9ca993;
+	border-radius: 7px;
+	background: #e4ecdf;
+	color: #232820;
+	cursor: pointer;
+}
+p {
+	font-size: 12px;
+	line-height: 1.5;
+}
+#status {
+	white-space: pre-wrap;
+}
+button:disabled {
+	opacity: 0.5;
+}
