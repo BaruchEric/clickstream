@@ -59,10 +59,10 @@ Full CLI flags are in README.md. Extension install and pairing are in extension/
 ## Data and state
 
 - `~/.chronicle/chronicle.db` (SQLite) plus a config file with a random device ID; `CHRONICLE_HOME` overrides the directory. Directory 0700, files 0600 on POSIX.
-- `~/.chronicle/extension-token`: the pairing token for the Chrome extension.
+- `~/.chronicle/extension-token`: the pairing token for the Chrome extension. The extension keeps its copy of the token, an offline queue of visits and captures, the recording flag, the last error and the last sync time in `chrome.storage.local`.
 - Events are immutable, keyed by kind, canonical URL and second timestamp. Notes, tags and muted domains are local only.
-- Sync: each device appends only to its own `<device-id>.ndjson` shard in the shared folder.
-- Browser databases are opened read-only and copied with `VACUUM INTO` to a temporary snapshot that is deleted afterwards.
+- Sync: each device appends only to its own `<device-id>.ndjson` shard in the shared folder, which is `--shared` or else `CHRONICLE_SHARED`. Export holds a `<device-id>.ndjson.lock` beside the shard while it writes and deletes it afterwards; a crash can leave it behind.
+- Browser databases are opened read-only and copied with `VACUUM INTO` to a temporary snapshot that is deleted afterwards. Each Codex digest writes `digest.txt` in a `chronicle-digest-*` folder under the OS temp directory, deleted when the digest ends.
 - `data/` (demo and scratch homes), `*.db` and `*.ndjson` are gitignored.
 
 ## Decisions
