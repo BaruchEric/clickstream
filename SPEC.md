@@ -75,6 +75,6 @@ Full CLI flags are in README.md. Extension install and pairing are in extension/
 ## Out of scope
 
 - Any automatic outbound request, remote asset, telemetry or account service.
-- Fetching page contents, scraping phones over adb, or a companion phone app.
+- Downloading page contents (page capture only reads up to 40,000 characters of text from a tab the user has open and asks to capture), scraping phones over adb, or a companion phone app.
 - Takeout HTML exports, and relaying another device's records through a third device's shard.
 - Changing system permissions (Safari Full Disk Access is granted by the user).
